@@ -18,7 +18,8 @@ from torch_geometric.graphgym.train import train
 from torch_geometric.graphgym.utils.agg_runs import agg_runs
 from torch_geometric.graphgym.utils.comp_budget import params_count
 from torch_geometric.graphgym.utils.device import auto_select_device
-from torch_geometric.graphgym.register import train_dict
+from torch_geometric.graphgym.register import train_dict, optimizer_dict, \
+    scheduler_dict
 from torch_geometric import seed_everything
 
 from graphgps.finetuning import load_pretrained_model_cfg, \
@@ -136,9 +137,12 @@ if __name__ == '__main__':
         if cfg.train.finetune:
             model = init_model_from_pretrained(model, cfg.train.finetune,
                                                cfg.train.freeze_pretrained)
-        optimizer = create_optimizer(model.parameters(),
-                                     new_optimizer_config(cfg))
-        scheduler = create_scheduler(optimizer, new_scheduler_config(cfg))
+        # pyg 2.8's create_optimizer/create_scheduler use from_config, which is incompatible
+        # with this repo's OptimizerConfig-style registered fns; call the registered fns direct.
+        optimizer = optimizer_dict[cfg.optim.optimizer](model.parameters(),
+                                                        new_optimizer_config(cfg))
+        scheduler = scheduler_dict[cfg.optim.scheduler](optimizer,
+                                                        new_scheduler_config(cfg))
         # Print model info
         logging.info(model)
         logging.info(cfg)
