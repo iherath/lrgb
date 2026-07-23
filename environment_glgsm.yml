@@ -38,7 +38,9 @@ dependencies:
       # transformers 5.x needs torch>=2.12; pin <5 for torch 2.4.1
       - transformers>=4.40.0,<5.0.0
       # graphgps imports every baseline layer at package load (incl. Performer), so these
-      # are required for `import graphgps` to succeed even though GLGSM never uses them
-      - local-attention
+      # are required for `import graphgps` to succeed even though GLGSM never uses them.
+      # Pin local-attention <1.5: 1.5+ pulls hyper-connections -> a newer torch, which
+      # clobbers torch 2.4.1+cu124 and breaks torch-scatter/mamba-ssm.
+      - local-attention<1.5
       - performer-pytorch
       - axial-positional-embedding
