@@ -280,6 +280,9 @@ class MetricWrapper:
 
         if self.target_nan_mask == "ignore-mean-label":
             warnings.filterwarnings("error")
+            # torchmetrics 0.10 emits a task-arg deprecation warning on every classification
+            # metric; keep it a warning (not an error) so it isn't caught and skip every label.
+            warnings.filterwarnings("ignore", message="From v0.10 an")
             # Compute the metric for each column, and output nan if there's an error on a given column
             metric_val = []
             for ii in range(len(target)):
