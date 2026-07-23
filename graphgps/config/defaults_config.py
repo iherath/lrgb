@@ -28,6 +28,10 @@ def extended_cfg(cfg):
     # Additional name tag used in `run_dir` and `wandb_name` auto generation.
     cfg.name_tag = ""
 
+    # train.mode selects the training loop via register_train (e.g. 'custom'). Newer pyg
+    # set_cfg no longer defines it, but the repo's configs set it, so re-add the default.
+    cfg.train.mode = 'standard'
+
     # Directory path to a saved experiment, if set, take the model from there
     # and fine-tune it on a new dataset.
     cfg.train.finetune = ""
