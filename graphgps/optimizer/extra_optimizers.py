@@ -82,7 +82,8 @@ def scheduler_with_warmup(optimizer, scheduler_config: SchedulerConfig):
         scheduler = get_cosine_schedule_with_warmup(
             optimizer=optimizer,
             num_warmup_steps=cfg.optim.num_warmup_epochs,
-            num_training_steps=scheduler_config.max_epoch
+            num_training_steps=scheduler_config.max_epoch,
+            num_cycles=cfg.optim.num_cycles
         )
     if scheduler is not None:
         return scheduler

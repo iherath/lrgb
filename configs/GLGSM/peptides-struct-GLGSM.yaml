@@ -45,4 +45,5 @@ optim:
   max_epoch: 250                # LGSM protocol
   scheduler: cosine_with_warmup # LGSM protocol (registration patched in extra_optimizers.py)
   num_warmup_epochs: 5
+  num_cycles: 0.3               # <0.5 decays the cosine slower (ends ~35% of peak, not 0)
   min_lr: 1e-6

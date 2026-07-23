@@ -22,6 +22,11 @@ def extended_optim_cfg(cfg):
     # For schedulers with warm-up phase, set the warm-up number of epochs
     cfg.optim.num_warmup_epochs = 50
 
+    # cosine_with_warmup: fraction of a cosine wave to traverse. 0.5 (default) decays to 0 by
+    # the last epoch; <0.5 decays slower and ends at a higher LR (0.25 -> ends at 50% of peak,
+    # 0.3 -> ~35%, 0.4 -> ~10%).
+    cfg.optim.num_cycles = 0.5
+
     # Clip gradient norms while training
     cfg.optim.clip_grad_norm = False
 
