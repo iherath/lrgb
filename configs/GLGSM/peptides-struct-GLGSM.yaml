@@ -27,7 +27,7 @@ model:
 gnn:
   layers_pre_mp: 0
   layers_post_mp: 1             # decoder head depth
-  dim_inner: 100                # ~490k params with num_blocks=2 (verify via "Params:" at startup)
+  dim_inner: 96                 # ~474k params (num_blocks=2, LGSM 3-pool head); 96 = x4 for Mamba2
   dropout: 0.1                  # LGSM E.3: regularization matters on peptides
   act: relu
 glgsm:
