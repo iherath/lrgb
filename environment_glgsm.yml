@@ -32,6 +32,8 @@ dependencies:
       # <0.11: the repo's metric code uses the torchmetrics 0.x functional API (f1, fbeta,
       # and no task= arg); 1.x renamed/gated these and would need call-site rewrites
       - torchmetrics<0.11
+      # torchmetrics 0.10 imports pkg_resources, which setuptools>=81 removed
+      - setuptools<81
       - yacs>=0.1.8
       - wandb
       - scikit-learn
