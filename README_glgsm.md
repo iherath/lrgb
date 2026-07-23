@@ -31,40 +31,47 @@ compatibility patches on pyg 2.4 — those live in the GLGSM integration (networ
 
 ## Setup
 
-**1. Create and activate the env** (everything except mamba-ssm):
+**1. Ensure conda is available.** RunPod images often lack it (or ship it uninitialized). This sources
+an existing install if present, otherwise downloads and installs miniconda into `~/miniconda3`:
+```
+for d in /opt/conda /root/miniconda3 $HOME/miniconda3 $HOME/anaconda3; do [ -f "$d/etc/profile.d/conda.sh" ] && . "$d/etc/profile.d/conda.sh" && break; done; conda --version 2>/dev/null || (mkdir -p ~/miniconda3 && wget -qO ~/miniconda3/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3 && . ~/miniconda3/etc/profile.d/conda.sh && conda --version)
+```
+
+**2. Create and activate the env** (everything except mamba-ssm):
 ```
 conda env create -f environment_glgsm.yml && conda activate glgsm-lrgb
 ```
 
-**2. Verify the GPU torch install:**
+**3. Verify the GPU torch install:**
 ```
 python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 ```
 
-**3. Install mamba-ssm + causal-conv1d** — must be a separate step, `--no-build-isolation`, because
-they compile against the torch installed in step 1:
+**4. Install mamba-ssm + causal-conv1d** — must be a separate step, `--no-build-isolation`, because
+they compile against the torch installed in step 2:
 ```
 pip install "causal-conv1d>=1.4.0,<1.5.0" "mamba-ssm==2.2.2" --no-build-isolation
 ```
 
-**4. Put GLGSM on the import path** so the harness can `import glgsm_model`:
+**5. Put GLGSM on the import path** so the harness can `import glgsm_model`:
 ```
 export PYTHONPATH=/workspace/Graph-SSM:$PYTHONPATH
 ```
 (The GLGSM network file also does a `sys.path.insert` fallback, but exporting this is the reliable path.)
 
-**5. Sanity-check imports:**
+**6. Sanity-check imports:**
 ```
 python -c "import torch_geometric.graphgym, mamba_ssm; from glgsm_model import GenLGSMModel; print('ok')"
 ```
 
-## Running (after the GLGSM integration is in place)
+## Running
 
 ```
-python main.py --cfg configs/GLGSM/peptides-func-GLGSM.yaml   wandb.use False
-python main.py --cfg configs/GLGSM/peptides-struct-GLGSM.yaml wandb.use False
+python main.py --cfg configs/GLGSM/peptides-func-GLGSM.yaml
+python main.py --cfg configs/GLGSM/peptides-struct-GLGSM.yaml
 ```
-Peptides data downloads automatically on first run. Drop `wandb.use False` to log to Weights & Biases.
+Peptides data downloads automatically on first run. wandb logging is enabled in the configs (project
+`peptides-glgsm`); run `wandb login` first, or append `wandb.use False` to a command to disable it.
 
 ## Hyperparameter sweep (LGSM §E.3 guidance)
 
