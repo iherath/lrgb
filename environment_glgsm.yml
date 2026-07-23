@@ -37,3 +37,8 @@ dependencies:
       - opt_einsum>=3.3.0
       # transformers 5.x needs torch>=2.12; pin <5 for torch 2.4.1
       - transformers>=4.40.0,<5.0.0
+      # graphgps imports every baseline layer at package load (incl. Performer), so these
+      # are required for `import graphgps` to succeed even though GLGSM never uses them
+      - local-attention
+      - performer-pytorch
+      - axial-positional-embedding
