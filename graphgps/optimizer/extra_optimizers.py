@@ -88,6 +88,10 @@ def scheduler_with_warmup(optimizer, scheduler_config: SchedulerConfig):
         return scheduler
 
 register_scheduler('scheduler_with_warmup', scheduler_with_warmup)
+# The handler above branches on scheduler_config.scheduler == '..._with_warmup', so it must be
+# registered under those exact names too (LGSM/GLGSM protocol uses cosine_with_warmup).
+register_scheduler('linear_with_warmup', scheduler_with_warmup)
+register_scheduler('cosine_with_warmup', scheduler_with_warmup)
 
 
 def get_linear_schedule_with_warmup(optimizer, num_warmup_steps,

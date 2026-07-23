@@ -1,0 +1,47 @@
+out_dir: results
+metric_best: ap
+wandb:
+  use: True
+  entity: isuru-herath10-carnegie-mellon-university
+  project: peptides-glgsm
+dataset:
+  format: OGB
+  name: peptides-functional
+  task: graph
+  task_type: classification_multilabel
+  transductive: False
+  node_encoder: True
+  node_encoder_name: Atom
+  node_encoder_bn: False
+  edge_encoder: False            # LGSM protocol: no edge/bond features
+train:
+  mode: custom
+  batch_size: 200               # LGSM / Tonshoff et al. 2024
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: glgsm                   # registered in graphgps/network/glgsm_net.py
+  loss_fun: cross_entropy       # -> BCEWithLogits for multilabel
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 0
+  layers_post_mp: 1             # decoder head depth
+  dim_inner: 100                # ~490k params with num_blocks=2 (verify via "Params:" at startup)
+  dropout: 0.1                  # LGSM E.3: regularization matters on peptides
+  act: relu
+glgsm:
+  mode: lgsm_adj                # seq. type (LGSM favored 'adj' on peptides)
+  max_hops: 8                   # seq. length (LGSM: shorter regularizes better)
+  num_blocks: 2                 # num. blocks
+  d_state: 16
+  window_size: 2
+  hyper_hidden_dim: 64
+  batched: False
+optim:
+  optimizer: adamW              # LGSM protocol
+  weight_decay: 0.0
+  base_lr: 0.001
+  max_epoch: 250                # LGSM protocol
+  scheduler: cosine_with_warmup # LGSM protocol (registration patched in extra_optimizers.py)
+  num_warmup_epochs: 5
+  min_lr: 1e-6

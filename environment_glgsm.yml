@@ -1,0 +1,39 @@
+# Conda env for running GLGSM (GenLGSM) on the LRGB peptides tasks, comparable to LGSM.
+#
+# Modern stack: mamba-ssm (GLGSM's Mamba2 blocks) needs torch 2.x, so we cannot use the
+# lrgb README's torch 1.9 / pyg 2.0.2 pins. This targets torch 2.4.1 + CUDA 12.4 + pyg>=2.4
+# (which ships GraphGym as torch_geometric.graphgym).
+#
+# NOTE: mamba-ssm and causal-conv1d are NOT listed here -- they build against the installed
+# torch and must be pip-installed AFTER this env exists, with --no-build-isolation. See
+# README_glgsm.md step 3.
+#
+#   conda env create -f environment_glgsm.yml
+#   conda activate glgsm-lrgb
+name: glgsm-lrgb
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu124
+      - --find-links https://data.pyg.org/whl/torch-2.4.1+cu124.html
+      # PyTorch (CUDA 12.4)
+      - torch==2.4.1+cu124
+      # PyG + GraphGym (graphgym ships inside torch-geometric>=2.x) -- prebuilt wheels via find-links
+      - torch-geometric>=2.4.0
+      - torch-scatter
+      - torch-sparse
+      - torch-cluster
+      # lrgb / GraphGym harness deps
+      - ogb                      # peptides-func/struct loading (OGB format)
+      - rdkit                    # molecular featurization for peptides
+      - torchmetrics>=1.0
+      - yacs>=0.1.8
+      - wandb
+      - scikit-learn
+      - pandas>=2.0.0
+      - opt_einsum>=3.3.0
+      # transformers 5.x needs torch>=2.12; pin <5 for torch 2.4.1
+      - transformers>=4.40.0,<5.0.0
