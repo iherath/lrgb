@@ -27,7 +27,7 @@ gnn:
   layers_pre_mp: 0
   layers_post_mp: 1             # decoder head depth
   dim_inner: 80                 # ~480k params (num_blocks=3, LGSM 3-pool head); 80 = x4 for Mamba2
-  dropout: 0.1                  # LGSM E.3: regularization matters on peptides
+  dropout: 0.3                  # regularize the severe func overfit (train ~0.99 / val ~0.64)
   act: relu
 glgsm:
   mode: lgsm_adj                # seq. type (LGSM favored 'adj' on peptides)
@@ -39,10 +39,10 @@ glgsm:
   batched: False
 optim:
   optimizer: adamW              # LGSM protocol
-  weight_decay: 0.0
+  weight_decay: 0.05            # regularize the severe func overfit
   base_lr: 0.001
   max_epoch: 250                # LGSM protocol
   scheduler: cosine_with_warmup # LGSM protocol (registration patched in extra_optimizers.py)
   num_warmup_epochs: 5
-  num_cycles: 0.3               # <0.5 decays the cosine slower (ends ~35% of peak, not 0)
+  num_cycles: 0.5               # full cosine to 0: the anneal tail regularizes (standard setup)
   min_lr: 1e-6
